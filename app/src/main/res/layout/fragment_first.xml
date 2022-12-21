@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".FirstFragment">
+        tools:context=".FirstFragment"
+        android:orientation="vertical">
+
+    <ListView
+            android:id="@+id/wifiList"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_weight="0.97"
+            android:divider="#f00"
+            android:dividerHeight="1dp"
+    />
+
+    <Button
+            android:id="@+id/scanBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="15dp"
+            android:background="@android:color/holo_red_light"
+            android:text="@string/scan_wifi"
+            android:textColor="#212121"/>
 
     <TextView
             android:id="@+id/textview_first"
@@ -28,4 +48,4 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
     />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
