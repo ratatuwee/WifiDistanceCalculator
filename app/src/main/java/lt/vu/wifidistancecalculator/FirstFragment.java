@@ -19,7 +19,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import lt.vu.wifidistancecalculator.databinding.FragmentFirstBinding;
@@ -59,12 +58,8 @@ public class FirstFragment extends Fragment {
 
     private void scanWifi() {
         boolean success = wifiManager.startScan();
-        Snackbar.make(getActivity().findViewById(android.R.id.content), "Scanning WiFi ... :" + success, BaseTransientBottomBar.LENGTH_SHORT)
+        Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content), "Scan started: " + success, BaseTransientBottomBar.LENGTH_SHORT)
                 .setAction("Action", null).show();
-        if (!success) {
-            // scan failure handling
-            scanFailure();
-        }
     }
 
     // Register the permissions callback, which handles the user's response to the
@@ -72,16 +67,6 @@ public class FirstFragment extends Fragment {
 // ActivityResultLauncher, as an instance variable.
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (Boolean.TRUE.equals(isGranted)) {
-                    // Permission is granted. Continue the action or workflow in your
-                    // app.
-                } else {
-                    // Explain to the user that the feature is unavailable because the
-                    // feature requires a permission that the user has denied. At the
-                    // same time, respect the user's decision. Don't link to system
-                    // settings in an effort to convince the user to change their
-                    // decision.
-                }
             });
 
     BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
@@ -89,13 +74,8 @@ public class FirstFragment extends Fragment {
         public void onReceive(Context c, Intent intent) {
             boolean success = intent.getBooleanExtra(
                     WifiManager.EXTRA_RESULTS_UPDATED, false);
-            Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content), "onreceive: " + success, BaseTransientBottomBar.LENGTH_LONG)
-                    .setAction("Action", null).show();
             if (success) {
                 scanSuccess();
-            } else {
-                // scan failure handling
-                scanFailure();
             }
         }
     };
@@ -103,15 +83,6 @@ public class FirstFragment extends Fragment {
 
     private void checkForLocationPermission() {
         if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()).getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-//            ActivityCompat.requestPermissions(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
-
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
     }
@@ -128,21 +99,9 @@ public class FirstFragment extends Fragment {
         binding.wifiList.setAdapter(adapter);
     }
 
-    private void scanFailure() {
-        // handle failure: new scan did NOT succeed
-        // consider using old scan results: these are the OLD results!
-        checkForLocationPermission();
-        List<ScanResult> results = wifiManager.getScanResults();
-
-    }
-
-
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        binding.buttonFirst.setOnClickListener(view1 -> NavHostFragment.findNavController(FirstFragment.this)
-                .navigate(R.id.action_FirstFragment_to_SecondFragment));
 
         binding.scanBtn.setOnClickListener(v -> scanWifi());
     }
