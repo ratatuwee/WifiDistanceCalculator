@@ -35,4 +35,14 @@
             android:background="@android:color/holo_red_light"
             android:text="@string/scan_wifi"
             android:textColor="#212121"/>
+
+    <Button
+            android:id="@+id/mapBtn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="15dp"
+            android:background="@android:color/holo_red_light"
+            android:text="@string/map"
+            android:textColor="#212121"/>
 </LinearLayout>

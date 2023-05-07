@@ -2,13 +2,15 @@
     <string name="app_name">WifiDistanceCalculator</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">Wifi AP list</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-    <string name="scan_wifi">Scan WiFi</string>
+    <string name="first_fragment_label">Wi-fi AP list</string>
+    <string name="second_fragment_label">Indoor map</string>
+    <string name="map">Map</string>
+    <string name="previous">Back to Wi-Fi scanning</string>
+    <string name="refresh">Refresh</string>
+    <string name="scan_wifi">Scan Wi-Fi</string>
     <string name="dataLabel">Data Label</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="indoorMap">Indoor map</string>
 </resources>

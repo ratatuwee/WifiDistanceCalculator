@@ -23,14 +23,22 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import lt.vu.wifidistancecalculator.databinding.FragmentFirstBinding;
+//import org.apache.commons.math3.fitting.leastsquares.*;
+//import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+//import org.apache.commons.math3.linear.ArrayRealVector;
+//import org.apache.commons.math3.linear.RealMatrix;
+//import org.apache.commons.math3.linear.RealVector;
+//import org.apache.commons.math3.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +48,7 @@ public class FirstFragment extends Fragment {
     private FragmentFirstBinding binding;
     private WifiManager wifiManager;
     private List<String> scanResults = new ArrayList<>();
+    private BroadcastReceiver wifiScanReceiver;
 
     @Override
     public View onCreateView(
@@ -53,6 +62,17 @@ public class FirstFragment extends Fragment {
         if (!wifiManager.isWifiEnabled()) {
             showSnackbar("WiFi is disabled ...", BaseTransientBottomBar.LENGTH_LONG);
         }
+
+        wifiScanReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context c, Intent intent) {
+                boolean success = intent.getBooleanExtra(
+                        WifiManager.EXTRA_RESULTS_UPDATED, false);
+                if (success) {
+                    scanSuccess();
+                }
+            }
+        };
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
@@ -72,17 +92,6 @@ public class FirstFragment extends Fragment {
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
             });
-
-    BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context c, Intent intent) {
-            boolean success = intent.getBooleanExtra(
-                    WifiManager.EXTRA_RESULTS_UPDATED, false);
-            if (success) {
-                scanSuccess();
-            }
-        }
-    };
 
     private void checkForLocationPermission() {
         if (ContextCompat.checkSelfPermission(requireActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -117,7 +126,7 @@ public class FirstFragment extends Fragment {
         writeFileOnInternalStorage("data.txt", labelText + ": " + String.join(";", scanResults) + "\n");
     }
 
-    public void writeFileOnInternalStorage(String sFileName, String sBody){
+    public void writeFileOnInternalStorage(String sFileName, String sBody) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "mydir");
         if (!file.exists()) {
             boolean createdDir = file.mkdir();
@@ -133,7 +142,7 @@ public class FirstFragment extends Fragment {
             writer.flush();
             writer.close();
             showSnackbar("Sucessfully wrote to storage", BaseTransientBottomBar.LENGTH_SHORT);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -149,17 +158,74 @@ public class FirstFragment extends Fragment {
 
         binding.scanBtn.setOnClickListener(v -> scanWifi());
         binding.dataLabelEdit.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId== EditorInfo.IME_ACTION_DONE) {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
                 binding.dataLabelEdit.clearFocus();
             }
             return false;
         });
+
+        binding.mapBtn.setOnClickListener(view1 -> NavHostFragment.findNavController(FirstFragment.this)
+                .navigate(R.id.action_FirstFragment_to_SecondFragment));
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        requireActivity().getApplicationContext().unregisterReceiver(wifiScanReceiver);
         binding = null;
     }
+
+    //    private void calculate() {
+//        final double radius = 70.0;
+//        final Cartesian2D[] observedPoints = new Cartesian2D[]{
+//                new Cartesian2D(30.0, 68.0),
+//                new Cartesian2D(50.0, -6.0),
+//                new Cartesian2D(110.0, -20.0),
+//                new Cartesian2D(35.0, 15.0),
+//                new Cartesian2D(45.0, 97.0)
+//        };
+//
+//        // the model function components are the distances to current estimated center,
+//        // they should be as close as possible to the specified radius
+//        MultivariateJacobianFunction distancesToCurrentCenter = point -> {
+//            Cartesian2D center = new Cartesian2D(point.getEntry(0), point.getEntry(1));
+//
+//            RealVector value = new ArrayRealVector(observedPoints.length);
+//            RealMatrix jacobian = new Array2DRowRealMatrix(observedPoints.length, 2);
+//
+//            for (int i = 0; i < observedPoints.length; ++i) {
+//                Cartesian2D o = observedPoints[i];
+//                double modelI = Cartesian2D.distance(o, center);
+//                value.setEntry(i, modelI);
+//                // derivative with respect to p0 = x center
+//                jacobian.setEntry(i, 0, (center.getX() - o.getX()) / modelI);
+//                // derivative with respect to p1 = y center
+//                jacobian.setEntry(i, 1, (center.getX() - o.getX()) / modelI);
+//            }
+//
+//            return new Pair<>(value, jacobian);
+//
+//        };
+//
+//        // the target is to have all points at the specified radius from the center
+//        double[] prescribedDistances = new double[observedPoints.length];
+//        Arrays.fill(prescribedDistances, radius);
+//
+//        // least squares problem to solve : modeled radius should be close to target radius
+//        LeastSquaresProblem problem = new LeastSquaresBuilder()
+//                .start(new double[]{100.0, 50.0})
+//                .model(distancesToCurrentCenter)
+//                .target(prescribedDistances)
+//                .lazyEvaluation(false)
+//                .maxEvaluations(1000)
+//                .maxIterations(1000)
+//                .build();
+//        LeastSquaresOptimizer.Optimum optimum = new LevenbergMarquardtOptimizer().optimize(problem);
+//        Cartesian2D fittedCenter = new Cartesian2D(optimum.getPoint().getEntry(0), optimum.getPoint().getEntry(1));
+//        System.out.println("fitted center: " + fittedCenter.getX() + " " + fittedCenter.getY());
+//        System.out.println("RMS: " + optimum.getRMS());
+//        System.out.println("evaluations: " + optimum.getEvaluations());
+//        System.out.println("iterations: " + optimum.getIterations());
+//    }
 
 }
