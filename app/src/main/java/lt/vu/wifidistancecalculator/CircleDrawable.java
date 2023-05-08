@@ -16,13 +16,14 @@ public class CircleDrawable extends Drawable {
         // Set up color and text size
         redPaint = new Paint();
         redPaint.setARGB(255, 255, 0, 0);
-        this.x = x;
-        this.y = y;
         Bitmap bitmap = ((BitmapDrawable)originalDrawable).getBitmap();
         // coordinates from web service and image dimensions are distorted for some weird reason
         float mobileFishRatio = 1.17F;
         originalWidth = bitmap.getWidth() / mobileFishRatio;
         originalHeight = bitmap.getHeight() / mobileFishRatio;
+
+        this.x = x < 0 ? 1 : x > originalWidth ? originalWidth - 1 : x;
+        this.y = y < 0 ? 1 : y > originalHeight ? originalHeight - 1 : y;
     }
 
     @Override
