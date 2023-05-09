@@ -9,6 +9,8 @@
     <string name="refresh">Refresh</string>
     <string name="scan_wifi">Scan Wi-Fi</string>
     <string name="dataLabel">Data Label</string>
+    <string name="trilateration">Trilateration</string>
+    <string name="neural">Neural network</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>

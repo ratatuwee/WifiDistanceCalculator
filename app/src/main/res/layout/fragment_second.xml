@@ -7,6 +7,25 @@
         android:layout_height="match_parent"
         tools:context=".SecondFragment">
 
+    <RadioGroup
+            android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/refreshBtn"
+                android:orientation="horizontal">
+        <RadioButton android:id="@+id/radio_trilateration"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="@string/trilateration"
+        />
+        <RadioButton android:id="@+id/radio_neural"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="@string/neural"
+        />
+    </RadioGroup>
+
     <Button
             android:id="@+id/refreshBtn"
             android:layout_width="wrap_content"
