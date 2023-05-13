@@ -90,7 +90,8 @@ public class SecondFragment extends Fragment {
             return;
         }
 
-        AndroidNetworking.get("http://192.168.0.195:8000/coordinates/{firstRssi}/{secondRssi}/{thirdRssi}")
+        String path = "http://192.168.0.195:8000/" + resolvePathString() + "/{firstRssi}/{secondRssi}/{thirdRssi}";
+        AndroidNetworking.get(path)
                 .addPathParameter("firstRssi", stringResults.get("1"))
                 .addPathParameter("secondRssi", stringResults.get("2"))
                 .addPathParameter("thirdRssi", stringResults.get("3"))
@@ -114,6 +115,15 @@ public class SecondFragment extends Fragment {
                 });
     }
 
+    private String resolvePathString() {
+        if (binding.radioTrilateration.isChecked()) {
+            return "trilateration";
+        } else if (binding.radioNeural.isChecked()) {
+            return "neural";
+        }
+
+        throw new IllegalStateException("Something went wrong");
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
