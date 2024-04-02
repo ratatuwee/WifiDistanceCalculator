@@ -40,6 +40,8 @@ public class FirstFragment extends Fragment {
 
     private FragmentFirstBinding binding;
     private WifiManager wifiManager;
+    //안드로이드로 와이파이를 관리하는 라이브러리로 현재 와이파이를 읽을때 startscan이라는 라이브러리를 사용하는데 안드로이드 10이상에서는
+    //해당 메소드를 사용할 수 없다. 대신하여 registerScanResultsCallback, ScanResultsCallback를 사용한다.
     private List<String> scanResults = new ArrayList<>();
     private BroadcastReceiver wifiScanReceiver;
 
@@ -103,11 +105,12 @@ public class FirstFragment extends Fragment {
                 .map(scanResult -> scanResult.SSID + " RSSI:" + scanResult.level)
                 .collect(Collectors.toList());
         scanResults = stringResults;
+        //위 부분에서 ssid 값으로 한기대 와이파이 걸러내서 bssid값으로 보관하게 해야함
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, stringResults);
         binding.wifiList.setAdapter(adapter);
         saveToFile();
-        scanWifi();
+        scanWifi(); //현재 이 부분때문에 스캔이 계속 되니깐 이후에 주석처리 해서 버튼을 눌렀을 때에만 되게 가능
     }
 
     private void saveToFile() {
